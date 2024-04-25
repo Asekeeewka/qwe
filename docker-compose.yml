@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    networks:
+      - dockercompose-frontend
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+    depends_on:
+      - db
+
+  db:
+    build: ./db
+    networks:
+      - dockercompose-frontend
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 15s
+      retries: 5
+
+networks:
+  dockercompose-frontend:
+
+volumes:
+  mysql-data:
